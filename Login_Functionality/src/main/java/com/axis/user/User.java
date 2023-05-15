@@ -1,5 +1,6 @@
 package com.axis.user;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -43,8 +44,8 @@ public class User implements UserDetails {
   @OneToMany(mappedBy = "user")
   private List<Token> tokens;
   
-  @OneToMany(mappedBy = "userId")
-  private List<Account> account;
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+  private List<Account> accounts;
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     return List.of(new SimpleGrantedAuthority(role.name()));

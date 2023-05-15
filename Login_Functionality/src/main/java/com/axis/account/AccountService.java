@@ -54,16 +54,16 @@ public class AccountService {
         } while (exists);
         return String.format("%09d", accountNumber);
     }
-    public Account getAccountByUserId(Integer userId) {
-        Optional<Account> account = accountRepository.findAccountByUserId(userId);
-        if(account.isEmpty()){
+    public Account getAccountByAccountNumber(String accountNumber) {
+        Optional<Account> account = accountRepository.findAccountByAccountNumber(accountNumber);
+        if(!account.isPresent()){
             throw new ResourceNotFoundException("account not found");
         }
         return account.get();
     }
 
-    public AccountOverviewResponse generateAccountOverviewByUserId(Integer userId){
-        Account userAccount = getAccountByUserId(userId);
+    public AccountOverviewResponse generateAccountOverviewByUserId(String accountNumber){
+        Account userAccount = getAccountByAccountNumber(accountNumber);
         return new AccountOverviewResponse(
                 userAccount.getAccountBalance(),
                 userAccount.getAccountNumber(),
@@ -71,18 +71,27 @@ public class AccountService {
                 userAccount.getAccountStatus().name()
         );
     }
-    public void updateAccount(Account existingAccount) {
-        existingAccount.setUpdatedAt(LocalDateTime.now());
-        accountRepository.save(existingAccount);
+    public Account updateAccount(String accountNumber , Account existingAccount) {
+    	
+    	Account acc = accountRepository.findAccountByAccountNumber(accountNumber).get();
+    	acc.setAccountBalance(existingAccount.getAccountBalance());
+    	acc.setAccountStatus(existingAccount.getAccountStatus());
+    	acc.setAccountType(existingAccount.getAccountType());
+        acc.setUpdatedAt(LocalDateTime.now());
+        accountRepository.save(acc);
+        
+        return acc;
     }
     
-    public void closeAccount(Integer userId) throws AccountNotClearedException{
-        Account userAccount = getAccountByUserId(userId);
-        if(!noPendingOrAvailableFundInTheAccount(userAccount)) {
+    public void closeAccount(String accountNumber) throws AccountNotClearedException{
+        Account userAccount = getAccountByAccountNumber(accountNumber);
+//        if(!noPendingOrAvailableFundInTheAccount(userAccount)) {
+
+        if(noPendingOrAvailableFundInTheAccount(userAccount)) {
             throw new AccountNotClearedException("confirm there is no pending or available balance in the account");
         }
         userAccount.setAccountStatus(AccountStatus.CLOSED);
-        updateAccount(userAccount);
+        updateAccount(userAccount.getAccountNumber(),userAccount);
     }
     private boolean noPendingOrAvailableFundInTheAccount(Account account){
         return account.getAccountBalance().equals(BigDecimal.ZERO);
@@ -90,7 +99,7 @@ public class AccountService {
     
     public void creditAccount(Account receiverAccount,BigDecimal amount) {
         receiverAccount.setAccountBalance(receiverAccount.getAccountBalance().add(amount));
-        updateAccount(receiverAccount);
+        updateAccount(receiverAccount.getAccountNumber(),receiverAccount);
     }
     public Account accountExistsAndIsActivated(String accountNumber) throws AccountNotActivatedException{
         Optional<Account> exitingAccount = accountRepository.findAccountByAccountNumber(accountNumber);

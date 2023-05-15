@@ -7,12 +7,17 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import com.axis.user.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 @Entity
 @Table(name = "accounts")
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class Account {
 
@@ -39,28 +44,11 @@ public class Account {
     
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User userId;
+    public User user;
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER =
             DateTimeFormatter.ofPattern("d/M/yyyy HH:mm:ss");
 
 
-	public Account() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-  
-    public Account(int id,User userId, BigDecimal accountBalance, AccountStatus accountStatus, String accountNumber, AccountType accountType) {
-       this.Id=id;
-    	this.accountBalance = accountBalance;
-        this.accountStatus = accountStatus;
-        this.accountNumber = accountNumber;
-        this.accountType = accountType;
-        this.createdAt = LocalDateTime.parse(
-                DATE_TIME_FORMATTER.format(LocalDateTime.now()),
-                DATE_TIME_FORMATTER);
-        this.updatedAt = createdAt;
-        this.userId = userId;
-    }
 
 }

@@ -5,6 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import com.axis.account.AccountService;
 import com.axis.auth.AuthenticationService;
 import com.axis.auth.RegisterRequest;
 import com.axis.user.Role;
@@ -20,8 +21,7 @@ public class SecurityApplication {
 
 	@Bean
 	public CommandLineRunner commandLineRunner(
-			AuthenticationService service
-	) {
+			AuthenticationService service 	) {
 		return args -> {
 			var admin = RegisterRequest.builder()
 					.firstname("Admin")
@@ -31,7 +31,7 @@ public class SecurityApplication {
 					.role(ADMIN)
 					.build();
 			System.out.println("Admin token: " + service.register(admin).getToken());
-
+			
 			var manager = RegisterRequest.builder()
 					.firstname("Admin")
 					.lastname("Admin")

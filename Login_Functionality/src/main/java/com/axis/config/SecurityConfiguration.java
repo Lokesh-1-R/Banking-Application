@@ -27,10 +27,15 @@ public class SecurityConfiguration {
         .csrf()
         .disable()
         .authorizeHttpRequests()
-        .requestMatchers("/api/v1/auth/**","/api/v1/accounts")
+        .requestMatchers("/api/v1/auth/**")
         
         .permitAll()
-       
+        .requestMatchers("/api/v1/accounts/profile").hasAuthority(ADMIN.name())
+        .requestMatchers("/api/v1/accounts/delete/{id}").hasAuthority(ADMIN.name())
+
+        .requestMatchers("/api/v1/accounts/get/all").hasAnyAuthority(MANAGER.name(),ADMIN.name(),EMPLOYEE.name())
+    	.requestMatchers("/api/v1/accounts/get/{id}").hasAnyAuthority(ADMIN.name(),MANAGER.name(),EMPLOYEE.name(),USER.name())
+    	.requestMatchers("api/v1/accounts/update/{id}").hasAnyAuthority(ADMIN.name(),MANAGER.name())
 //        .requestMatchers("/api/v1/auth/manager/Register").hasRole(ADMIN.name())
         
 //       .requestMatchers("api/v1/employee/**").hasAnyRole(ADMIN.name(),MANAGER.name(),EMPLOYEE.name())

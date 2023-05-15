@@ -64,15 +64,15 @@ public class AccountController {
         accountService.createAccount(account);
         return new ResponseEntity<>("Account created", HttpStatus.CREATED);
     }
-    @GetMapping("/all")
+    @GetMapping("get/all")
     public ResponseEntity<List<Account>> getAllAccounts() {
         List<Account> accounts = accountService.getAllAccounts();
         return new ResponseEntity<>(accounts, HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Account> getAccountByUserId(@PathVariable("id") Integer accountId) {
-        Account account = accountService.getAccountByUserId(accountId);
+    @GetMapping("/get/{id}")
+    public ResponseEntity<Account> getAccountByUserId(@PathVariable("id") String accountNumber) {
+        Account account = accountService.getAccountByAccountNumber(accountNumber);
         if (account != null) {
             return new ResponseEntity<>(account, HttpStatus.OK);
         } else {
@@ -80,19 +80,19 @@ public class AccountController {
         }
     }
 
-//    @PutMapping("/{id}")
-//    public ResponseEntity<Account> updateAccount(@PathVariable("id") Integer accountId, @RequestBody Account account) {
-//        Account updatedAccount = accountService.updateAccount(accountId, account);
-//        if (updatedAccount != null) {
-//            return new ResponseEntity<>(updatedAccount, HttpStatus.OK);
-//        } else {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//    }
+    @PutMapping("/update/{id}")
+    public ResponseEntity<Account> updateAccount(@PathVariable("id") String accontNumber, @RequestBody Account account) {
+        Account updatedAccount = accountService.updateAccount(accontNumber, account);
+        if (updatedAccount != null) {
+            return new ResponseEntity<>(updatedAccount, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAccount(@PathVariable("id") Integer accountId) throws AccountNotClearedException {
-        accountService.closeAccount(accountId);
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Void> deleteAccount(@PathVariable("id") String  accountNumber) throws AccountNotClearedException  {
+        accountService.closeAccount(accountNumber);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
